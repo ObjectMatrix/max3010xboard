@@ -1,1 +1,1 @@
-# max3010xboard
+# max3010x board
