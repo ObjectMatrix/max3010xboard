@@ -2,7 +2,7 @@
 
 ## Arteries  
 Arteries: blood delivery to tissues and organs<br />
-Veins: blood return to the heart
+Veins: blood return to the heart<br />
 ![Arteries](img/arteries.png)
 
 ## Hemoglobin  
