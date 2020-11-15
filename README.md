@@ -11,3 +11,6 @@
 
 [HowItWorks!](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
 
+## ThingSpeak spO2 plot. 
+https://thingspeak.com/channels/1229902
+
