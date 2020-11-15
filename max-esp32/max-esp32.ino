@@ -12,12 +12,12 @@ MAX30105 particleSensor;
 
 #define USEFIFO
 
-const char* ssid = "FBIHQ";
-const char* password = "nupsidupsi1204";
+const char* ssid = "";
+const char* password = "";
 
 void sendDataToThingSpeak(double val, String field) {
       const char* serverName = "http://api.thingspeak.com/update";
-      String apiKey = "FZKEIKQT6479STNX";
+      String apiKey = "";
       HTTPClient http;
       
       // Your Domain name with URL path or IP address with path
