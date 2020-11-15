@@ -1,4 +1,4 @@
-# max3010x board
+# ESP32-WROOM-32D (Espressif) and MAX30102 board
 ## Product  
 ![esp32-max30102](img/esp32-max30102.jpg)
 ## Pin Configuration  
