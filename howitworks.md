@@ -1,8 +1,13 @@
 # How it works
 
 ## Arteries  
+<<<<<<< HEAD
 Arteries: blood delivery to tissues and organs  
 Veins: blood return to the heart
+=======
+Arteries: blood delivery to tissues and organs<br />
+Veins: blood return to the heart<br />
+>>>>>>> 5a58ab0e1fbdad58aef5d6b8062eabd8cb2a514a
 ![Arteries](img/arteries.png)
 
 ## Hemoglobin  
