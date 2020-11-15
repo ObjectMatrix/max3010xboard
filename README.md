@@ -8,5 +8,6 @@
 ![max3010x](img/max3010x.png)
 
 ## How It Works  
-![link](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
+
+![HowItWorks](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
 
