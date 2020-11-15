@@ -9,5 +9,5 @@
 
 ## How It Works  
 
-![HowItWorks](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
+[HowItWorks!](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
 
