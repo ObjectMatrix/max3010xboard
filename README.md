@@ -1,8 +1,8 @@
 # max3010x board
 ## Product  
-![esp32-max30102](esp32-max30102.jpg)
+![esp32-max30102](img/esp32-max30102.jpg)
 ## Pin Configuration  
-![ESP32DevKitCpinout](ESP32DevKitCpinout.png)
+![ESP32DevKitCpinout](img/ESP32DevKitCpinout.png)
 
 ## MAX30102  
-![max3010x](max3010x.png)
+![max3010x](img/max3010x.png)
