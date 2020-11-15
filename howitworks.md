@@ -1,7 +1,7 @@
 # How it works
 
 ## Arteries  
-Arteries: blood delivery to tissues and organs
+Arteries: blood delivery to tissues and organs<br />
 Veins: blood return to the heart
 ![Arteries](img/arteries.png)
 
