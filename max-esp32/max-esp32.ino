@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include "MAX30105.h" //sparkfun MAX3010X library
+#include "credentials.h"
 #include <WiFiClientSecure.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -29,12 +30,9 @@ MAX30105 particleSensor;
 
 #define USEFIFO
 
-const char* ssid = "";
-const char* password = "";
-
 void sendDataToThingSpeak(double val, String field) {
       const char* serverName = "http://api.thingspeak.com/update";
-      String apiKey = "";
+      String apiKey = thingSpeakAPIKey;
       HTTPClient http;
       
       // Your Domain name with URL path or IP address with path
