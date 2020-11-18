@@ -6,9 +6,26 @@
 
 MAX30105 particleSensor;
 
-// #define MAX30105 
-// if you have Sparkfun's MAX30105 breakout board , 
-// try #define MAX30105 
+/*
+  SpO2 is calculated as R=((square root means or Red/Red average )/((square root means of IR)/IR average))
+  SpO2 = -23.3 * (R - 0.4) + 100;
+      source: https://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
+      source: https://ww1.microchip.com/downloads/en/Appnotes/00001525B.pdf
+  ## Instructions:
+  0) Install Sparkfun's MAX3010X library
+  1) Load code onto ESP32 with MH-ET LIVE MAX30102 board
+  2) Put MAX30102 board in plastic bag and insulates from your finger.
+     and attach sensor to your finger tip
+  3) Run this program by pressing reset botton on ESP32
+  4) Wait for 3 seconds and Open Arduino IDE Tools->'Serial Plotter'
+     Make sure the drop down is set to 115200 baud
+  5) Search the best position and presure for the sensor by watching
+     the blips on Arduino's serial plotter
+     I recommend to place LED under the backside of nail and wrap you
+     finger and the sensor by rubber band softly.
+  6) Checkout the SpO2 and blips by seeing serial Plotter
+     100%,95%,90%,85% SpO2 lines are always drawn on the plotter
+*/
 
 #define USEFIFO
 
@@ -52,15 +69,18 @@ void setup()
     Serial.println("WiFi connected.");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+    Serial.println(WiFi.macAddress());
+    
   /**   
    * Initialize sensor over I2C bus
    * 400 kbit fastmode and – since 1998 – a high speed 3.4 Mbit
    * option available. Recently, fast mode plus a transfer rate
    * between this has been specified.
    */
+      
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
   {
-    Serial.println("MAX30102 was not found. Please check wiring/power/solder jumper at MH-ET LIVE MAX30102 board. ");
+    Serial.println("MAX30102 was not found ");
     while (1);
   }
 
@@ -75,6 +95,7 @@ void setup()
   int sampleRate = 200; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
   int pulseWidth = 411; // Options: 69, 118, 215, 411
   int adcRange = 16384; // Options: 2048, 4096, 8192, 16384
+  
   // Set up the wanted parameters, configure sensor with these settings
   particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); 
 }
@@ -112,10 +133,10 @@ void loop()
   while (particleSensor.available()) { // do we have new data
 #ifdef MAX30105
     red = particleSensor.getFIFORed(); // Sparkfun's MAX30105
-    ir = particleSensor.getFIFOIR();  // Sparkfun's MAX30105
+    ir = particleSensor.getFIFOIR();   // Sparkfun's MAX30105
 #else
-    red = particleSensor.getFIFOIR(); // why getFOFOIR output Red data by MAX30102 on MH-ET LIVE breakout board
-    ir = particleSensor.getFIFORed(); // why getFIFORed output IR data by MAX30102 on MH-ET LIVE breakout board
+    red = particleSensor.getFIFOIR();  // getFOFOIR output Red data by MAX30102 on MH-ET LIVE breakout board
+    ir = particleSensor.getFIFORed();  // getFIFORed output IR data by MAX30102 on MH-ET LIVE breakout board
 #endif
     i++;
     fred = (double)red;
@@ -134,53 +155,37 @@ void loop()
         if ( ir_forGraph < 80.0) ir_forGraph = 80.0;
         if ( red_forGraph > 100.0 ) red_forGraph = 100.0;
         if ( red_forGraph < 80.0 ) red_forGraph = 80.0;
-        // Serial.print(red); Serial.print(","); Serial.print(ir);Serial.print(".");
         if (ir < FINGER_ON) ESpO2 = MINIMUM_SPO2; //indicator for finger detached
-        if (ir >= FINGER_ON) {
-        //        Serial.print(ir_forGraph); // to display pulse wave at the same time with SpO2 data
-        //        Serial.print(","); Serial.print(red_forGraph); // to display pulse wave at the same time with SpO2 data
-        //        Serial.print(",");
-        
-                  
-                  Serial.print("sendDataToThingSpeak: ");
-                  // float pulses = (2.0 * fred - avered) / avered * SCALE;
-                  float pulses = (2.0 * fir - aveir) / aveir * SCALE;
-                  Serial.println(ESpO2); // low pass filtered SpO2
-                  // Serial.println(pulses);
-                  String field1 = "field1";
-                  sendDataToThingSpeak(ESpO2, field1);
-                  // String field2 = "field2";
-                  // sendDataToThingSpeak(pulses, field2);
-        }
-        //        Serial.print(","); Serial.print(85.0); // reference SpO2 line
-        //        Serial.print(","); Serial.print(90.0); // warning SpO2 line
-        //        Serial.print(","); Serial.print(95.0); // safe SpO2 line
-        //        Serial.print(","); Serial.println(100.0); // max SpO2 line
+              if (ir >= FINGER_ON) {
+                        Serial.print("sendDataToThingSpeak: ");
+                        // float pulses = (2.0 * fred - avered) / avered * SCALE;
+                        float pulses = (2.0 * fir - aveir) / aveir * SCALE;
+                        Serial.println(ESpO2); // low pass filtered SpO2
+                        // Serial.println(pulses);
+                        String field1 = "field1";
+                        sendDataToThingSpeak(ESpO2, field1);
+              }
       }
     }
     if ((i % Num) == 0) {
       double R = (sqrt(sumredrms) / avered) / (sqrt(sumirrms) / aveir);
-      // Serial.println(R);
       SpO2 = -23.3 * (R - 0.4) + 100; // source: http://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
       ESpO2 = FSpO2 * ESpO2 + (1.0 - FSpO2) * SpO2;// low pass filter
-      // Serial.print(SpO2);Serial.print(","); Serial.println(ESpO2);
       sumredrms = 0.0;
       sumirrms = 0.0;
       i = 0;
       break;
     }
-    // move to next sample
     particleSensor.nextSample(); 
   }
 #else
-  // // do we have new data from sensors
   while (1) {
   #ifdef MAX30105
     red = particleSensor.getRed();  // Sparkfun's MAX30105
       ir = particleSensor.getIR();  // Sparkfun's MAX30105
   #else
-      red = particleSensor.getIR(); // why getFOFOIR outputs Red data by MAX30102 on MH-ET LIVE breakout board
-      ir = particleSensor.getRed(); // why getFIFORed outputs IR data by MAX30102 on MH-ET LIVE breakout board
+      red = particleSensor.getIR(); // getFOFOIR outputs Red data by MAX30102 on MH-ET LIVE breakout board
+      ir = particleSensor.getRed(); // getFIFORed outputs IR data by MAX30102 on MH-ET LIVE breakout board
   #endif
     i++;
     fred = (double)red;
@@ -202,24 +207,13 @@ void loop()
         // Serial.print(red); Serial.print(","); Serial.print(ir);Serial.print(".");
         if (ir < FINGER_ON) ESpO2 = MINIMUM_SPO2; //indicator for finger detached
         if (ir >= FINGER_ON) {
-        // Serial.print((2.0 * fir - aveir) / aveir * SCALE); // to display pulse wave at the same time with SpO2 data
-        // Serial.print(","); Serial.print((2.0 * fred - avered) / avered * SCALE); // to display pulse wave at the same time with SpO2 data
-        // Serial.print(",");
-        // float pulses = (2.0 * fred - avered) / avered * SCALE;
           float pulses = (2.0 * fir - aveir) / aveir * SCALE;
           Serial.print("sendDataToThingSpeak: ");
           Serial.println(ESpO2); // low pass filtered SpO2
           // Serial.println(pulses); 
           String field1 = "field1";
           sendDataToThingSpeak(ESpO2, field1);
-        // String field2 = "field2";
-        // sendDataToThingSpeak(pulses, field2);
         }
-        //        Serial.print(","); Serial.print(85.0); //
-        //        Serial.print(","); Serial.print(90.0); // warning SpO2 line
-        //        Serial.print(","); Serial.print(95.0); // safe SpO2 line
-        //        Serial.print(","); Serial.println(100.0); // max SpO2 line
-        //#endif
       }
     }
     if ((i % Num) == 0) {
@@ -227,7 +221,6 @@ void loop()
       // Serial.println(R);
       SpO2 = -23.3 * (R - 0.4) + 100; // http://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
       ESpO2 = FSpO2 * ESpO2 + (1.0 - FSpO2) * SpO2;
-      //  Serial.print(SpO2);Serial.print(",");Serial.println(ESpO2);
       sumredrms = 0.0; sumirrms = 0.0; i = 0;
       break;
     }
