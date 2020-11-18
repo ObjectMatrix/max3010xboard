@@ -195,7 +195,6 @@ void loop()
     sumredrms += (fred - avered) * (fred - avered); // square sum of alternate component of red level
     sumirrms += (fir - aveir) * (fir - aveir); // square sum of alternate component of IR level
     if ((i % SAMPLING) == 0) { // slow down graph plotting speed for arduino IDE toos menu by thin out
-      //#if 0
       if ( millis() > TIMETOBOOT) {
         float ir_forGraph = (2.0 * fir - aveir) / aveir * SCALE;
         float red_forGraph = (2.0 * fred - avered) / avered * SCALE;
@@ -210,7 +209,6 @@ void loop()
           float pulses = (2.0 * fir - aveir) / aveir * SCALE;
           Serial.print("sendDataToThingSpeak: ");
           Serial.println(ESpO2); // low pass filtered SpO2
-          // Serial.println(pulses); 
           String field1 = "field1";
           sendDataToThingSpeak(ESpO2, field1);
         }
