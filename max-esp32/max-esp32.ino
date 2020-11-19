@@ -4,32 +4,75 @@
 #include <WiFiClientSecure.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <PubSubClient.h>
 
 MAX30105 particleSensor;
-
+WiFiClient esp32Client;
+PubSubClient client(esp32Client);
 /*
   SpO2 is calculated as R=((square root means or Red/Red average )/((square root means of IR)/IR average))
   SpO2 = -23.3 * (R - 0.4) + 100;
       source: https://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
       source: https://ww1.microchip.com/downloads/en/Appnotes/00001525B.pdf
   ## Instructions:
-  0) Install Sparkfun's MAX3010X library
-  1) Load code onto ESP32 with MH-ET LIVE MAX30102 board
-  2) Put MAX30102 board in plastic bag and insulates from your finger.
+  - Install Sparkfun's MAX3010X library
+  - Load code onto ESP32 with MH-ET LIVE MAX30102 board
+  - Put MAX30102 board in plastic bag and insulates from your finger.
      and attach sensor to your finger tip
-  3) Run this program by pressing reset botton on ESP32
-  4) Wait for 3 seconds and Open Arduino IDE Tools->'Serial Plotter'
+  - Run this program by pressing reset botton on ESP32
+  - Wait for 3 seconds and Open Arduino IDE Tools->'Serial Plotter'
      Make sure the drop down is set to 115200 baud
-  5) Search the best position and presure for the sensor by watching
+  - Search the best position and presure for the sensor by watching
      the blips on Arduino's serial plotter
      I recommend to place LED under the backside of nail and wrap you
      finger and the sensor by rubber band softly.
-  6) Checkout the SpO2 and blips by seeing serial Plotter
+  - Checkout the SpO2 and blips by seeing serial Plotter
      100%,95%,90%,85% SpO2 lines are always drawn on the plotter
 */
 
 #define USEFIFO
 
+void callback(char* topic, byte* payload, unsigned int length) {
+  // do nothing, as we're not subscribing anything now
+}
+/**
+ * send data to MQTT Broker
+ * so web pages can consume data over the WebSockets
+ */
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "esp32-spO2-client";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish(publishedTopic, "80");
+    } else {
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+ 
+void sendDataToMQTTBroker(double val) {
+    // boolean publish(const char* topic, const char* payload);
+    delay(25);
+    char result[8];
+    dtostrf(val, 2, 0, result);
+    Serial.println(result);
+    client.publish(publishedTopic, result);
+    delay(25);
+}
+/**
+ * send data to MatLab/ThingSpeak
+ */ 
+ /*
 void sendDataToThingSpeak(double val, String field) {
       const char* serverName = "http://api.thingspeak.com/update";
       String apiKey = thingSpeakAPIKey;
@@ -47,11 +90,12 @@ void sendDataToThingSpeak(double val, String field) {
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
       Serial.print(field);
+      Serial.print(": ");
       Serial.println(val);
       // Free resources
       http.end();   
 }
-
+*/
 void setup()
 {
   Serial.begin(115200);
@@ -68,7 +112,9 @@ void setup()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     Serial.println(WiFi.macAddress());
-    
+
+   client.setServer(mqttServer, mqttPort);
+   // client.setCallback(callback);
   /**   
    * Initialize sensor over I2C bus
    * 400 kbit fastmode and – since 1998 – a high speed 3.4 Mbit
@@ -115,6 +161,10 @@ double frate = 0.95; // low pass filter for IR/red LED value to eliminate AC com
 
 void loop()
 {
+  if (!client.connected()) {
+    reconnect();
+  }
+  
   uint32_t ir, red , green;
   double fred, fir;
   /**
@@ -161,14 +211,15 @@ void loop()
                         Serial.println(ESpO2); // low pass filtered SpO2
                         // Serial.println(pulses);
                         String field1 = "field1";
-                        sendDataToThingSpeak(ESpO2, field1);
+                        // sendDataToThingSpeak(ESpO2, field1);
+                        sendDataToMQTTBroker(ESpO2);
               }
       }
     }
     if ((i % Num) == 0) {
       double R = (sqrt(sumredrms) / avered) / (sqrt(sumirrms) / aveir);
       SpO2 = -23.3 * (R - 0.4) + 100; // source: http://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
-      ESpO2 = FSpO2 * ESpO2 + (1.0 - FSpO2) * SpO2;// low pass filter
+      ESpO2 = FSpO2 * ESpO2 + (1.0 - FSpO2) * SpO2; // low pass filter
       sumredrms = 0.0;
       sumirrms = 0.0;
       i = 0;
@@ -205,10 +256,11 @@ void loop()
         if (ir < FINGER_ON) ESpO2 = MINIMUM_SPO2; //indicator for finger detached
         if (ir >= FINGER_ON) {
           float pulses = (2.0 * fir - aveir) / aveir * SCALE;
-          Serial.print("sendDataToThingSpeak: ");
+          // Serial.print("sendDataToThingSpeak: ");
           Serial.println(ESpO2); // low pass filtered SpO2
           String field1 = "field1";
-          sendDataToThingSpeak(ESpO2, field1);
+          // sendDataToThingSpeak(ESpO2, field1);
+          sendDataToMQTTBroker(ESpO2);
         }
       }
     }
