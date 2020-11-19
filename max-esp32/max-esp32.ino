@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include "MAX30105.h" //sparkfun MAX3010X library
+#include "MAX30105.h"
 #include "credentials.h"
 #include <WiFiClientSecure.h>
 #include <WiFi.h>
@@ -9,6 +9,7 @@
 MAX30105 particleSensor;
 WiFiClient esp32Client;
 PubSubClient client(esp32Client);
+const int LEDConnectPIN = 5;
 /*
   SpO2 is calculated as R=((square root means or Red/Red average )/((square root means of IR)/IR average))
   SpO2 = -23.3 * (R - 0.4) + 100;
@@ -51,7 +52,9 @@ void reconnect() {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish(publishedTopic, "80");
+      digitalWrite (LEDConnectPIN, HIGH);
     } else {
+      digitalWrite (LEDConnectPIN, LOW);
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
@@ -66,6 +69,7 @@ void sendDataToMQTTBroker(double val) {
     char result[8];
     dtostrf(val, 2, 0, result);
     Serial.println(result);
+     Serial.println ("<<<<<<<<<< ");
     client.publish(publishedTopic, result);
     delay(25);
 }
@@ -98,12 +102,14 @@ void sendDataToThingSpeak(double val, String field) {
 */
 void setup()
 {
+  pinMode (LEDConnectPIN, OUTPUT);
   Serial.begin(115200);
   Serial.println("Initializing...");
 
     WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED) {
+      digitalWrite (LEDConnectPIN, LOW);
         delay(500);
         Serial.print(".");
     }
@@ -114,6 +120,7 @@ void setup()
     Serial.println(WiFi.macAddress());
 
    client.setServer(mqttServer, mqttPort);
+   digitalWrite (LEDConnectPIN, HIGH);
    // client.setCallback(callback);
   /**   
    * Initialize sensor over I2C bus
@@ -266,7 +273,6 @@ void loop()
     }
     if ((i % Num) == 0) {
       double R = (sqrt(sumredrms) / avered) / (sqrt(sumirrms) / aveir);
-      // Serial.println(R);
       SpO2 = -23.3 * (R - 0.4) + 100; // http://ww1.microchip.com/downloads/jp/AppNotes/00001525B_JP.pdf
       ESpO2 = FSpO2 * ESpO2 + (1.0 - FSpO2) * SpO2;
       sumredrms = 0.0; sumirrms = 0.0; i = 0;
