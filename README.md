@@ -1,4 +1,5 @@
 # ESP32-WROOM-32D - Espressif- and MAX30102 High-Sensitivity Pulse Oximeter and Heart-Rate Sensor
+![spO2Chart](img/charts.png)
 ## Product  
 ![esp32-max30102](img/esp32-max30102.jpg)
 ## Pin Configuration  
