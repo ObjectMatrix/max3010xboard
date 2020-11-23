@@ -23,6 +23,16 @@
          text-indent: 0;
          display: inline;
       }
+      .footer {
+	  font-size: .2em;
+	  position: fixed;
+	  left: 0;
+	  bottom: 0;
+	  width: 100%;
+	  background-color: black;
+	  color: white;
+	  text-align: center;
+      }
       </style>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -62,6 +72,10 @@ var chart = new SmoothieChart({labels:{fontSize:17},timestampFormatter:SmoothieC
 	chart.addTimeSeries(series, {lineWidth:2,strokeStyle:'#00ff00'});
   chart.streamTo(canvas, 500);
     </script>
+  
+   <footer class="footer"> 
+     <small>&copy; Copyright 2020-2021, Ahm Asaduzzaman</small> 
+   </footer>
   </body>
 </html>
 
