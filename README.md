@@ -14,7 +14,7 @@
 [How It Works!](https://github.com/ObjectMatrix/max3010xboard/blob/main/howitworks.md)
 
 ## Connectivity  
-# ◯ ESP32 + MAX30102 ⇨ ◯ MQTT ⇨ ◯ Node Server + SocketIO ⇨ ◯ Browser  
+### ◯ ESP32 + MAX30102 ⇨ ◯ MQTT ⇨ ◯ Node Server + SocketIO ⇨ ◯ Browser  
 ![Connectivity](img/Oximeter.png)
 
 ## ThingSpeak spO2 plot. 
