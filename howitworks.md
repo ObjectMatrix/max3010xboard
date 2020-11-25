@@ -24,3 +24,8 @@ The distance between the “tips” of the waves is equal to the wavelength.
 
 ## Wavelength  
 ![Wavelength](img/prismcolors.png)
+
+
+# Connectivity  
+## ESP32 with MAX30102 →→ MQTT →→ Node Server with SocketIO →→ WWW Browser  
+![Wavelength](img/Oximeter.png)
