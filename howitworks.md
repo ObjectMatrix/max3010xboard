@@ -27,5 +27,5 @@ The distance between the “tips” of the waves is equal to the wavelength.
 
 
 # Connectivity  
-## ● ESP32 + MAX30102 ⇨ ● MQTT ⇨ ● Node Server + SocketIO ⇨ ● Browser  
+## ◯ ESP32 + MAX30102 ⇨ ◯ MQTT ⇨ ◯ Node Server + SocketIO ⇨ ◯ Browser  
 ![Wavelength](img/Oximeter.png)
