@@ -5,6 +5,10 @@
 ## Pin Configuration  
 ![ESP32DevKitCpinout](img/ESP32DevKitCpinout.png)
 
+# Connectivity  
+## ◯ ESP32 + MAX30102 ⇨ ◯ MQTT ⇨ ◯ Node Server + SocketIO ⇨ ◯ Browser  
+![Connectivity](img/Oximeter.png)
+
 ## MAX30102  
 ![max3010x](img/max3010x.png)
 
