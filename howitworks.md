@@ -22,7 +22,11 @@ The light emitted from the source has to travel through the artery. The light tr
 
 The distance between the “tips” of the waves is equal to the wavelength.
 
-## Wavelength  
+## OxyHb vs DeoxyHb 
+
+Now let us see the absorbance graph of OxyHb and the absorbance graph of DeoxyHb together so we can compare them.  
+Note how each of them absorbs light of different wavelengths very differently.
+
 ![DeoxyOxyHg](img/hgo.png)
 
 
