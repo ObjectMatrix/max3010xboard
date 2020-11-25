@@ -23,7 +23,7 @@ The light emitted from the source has to travel through the artery. The light tr
 The distance between the “tips” of the waves is equal to the wavelength.
 
 ## Wavelength  
-![Wavelength](img/prismcolors.png)
+![DeoxyOxyHg](img/hgo.png)
 
 
 # Connectivity  
