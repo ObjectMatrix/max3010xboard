@@ -6,8 +6,8 @@ Veins: blood return to the heart<br />
 ![Arteries](img/arteries.png)
 
 ## Hemoglobin  
-The hemoglobin without oxygen we will call de oxygenated hemoglobin (deoxy Hb).  
-The hemoglobin with oxygen, we will call oxygenated hemoglobin (oxy Hb).
+The hemoglobin without oxygen we will call `de oxygenated` hemoglobin (`deoxy Hb`).  
+The hemoglobin with oxygen, we will call `oxygenated` hemoglobin (`oxy Hb`).
 
 ![Hemoglobin](img/hg.png)
 
