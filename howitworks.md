@@ -29,6 +29,9 @@ Note how each of them absorbs light of different wavelengths very differently.
 
 ![DeoxyOxyHg](img/hgo.png)
 
+## Inventor
+### Takuo Aoyagi—a Tribute to the Brain Behind Pulse Oximetry. 
+[a link](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7237228/)
 
 # Connectivity  
 ## ◯ ESP32 + MAX30102 ⇨ ◯ MQTT ⇨ ◯ Node Server + SocketIO ⇨ ◯ Browser  
